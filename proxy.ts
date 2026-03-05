@@ -6,7 +6,6 @@ const { auth } = NextAuth(authConfig);
 
 const PUBLIC_PATHS = ["/"];
 const PENDING_ALLOWED = ["/pending", "/logout"];
-const ADMIN_PATHS = ["/admin"];
 
 export default auth((req) => {
   const { nextUrl, auth: session } = req;

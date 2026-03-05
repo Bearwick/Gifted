@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn, signOut } from "@/auth";
 import Image from "next/image";
 
 export default function Home() {

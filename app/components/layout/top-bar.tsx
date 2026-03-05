@@ -13,6 +13,9 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import React from "react";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 const pages = ["Sign out"];
 
@@ -82,6 +85,33 @@ const Profile = () => {
   );
 };
 
+const Theme = () => {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <Box sx={{ width: 40, height: 40 }} />;
+  }
+
+  return (
+    <Box>
+      {resolvedTheme === "light" ? (
+        <IconButton color="inherit" onClick={() => setTheme("dark")}>
+          <LightModeIcon />
+        </IconButton>
+      ) : (
+        <IconButton color="inherit" onClick={() => setTheme("light")}>
+          <DarkModeIcon />
+        </IconButton>
+      )}
+    </Box>
+  );
+};
+
 const AppBarContent = () => {
   const { data: session, status } = useSession();
   const role = session?.user?.role;
@@ -92,7 +122,7 @@ const AppBarContent = () => {
           Admin dashboard
         </Link>
       ) : null}
-
+      <Theme />
       {status === "authenticated" ? <Profile /> : <Login />}
     </Box>
   );
