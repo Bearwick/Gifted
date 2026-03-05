@@ -6,6 +6,7 @@ const { auth } = NextAuth(authConfig);
 
 const PUBLIC_PATHS = ["/"];
 const PENDING_ALLOWED = ["/pending", "/logout"];
+const ADMIN_PATHS = ["/admin"];
 
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
@@ -27,6 +28,11 @@ export default auth((req) => {
     if (!isAllowedForPending) {
       return NextResponse.redirect(new URL("/pending", nextUrl));
     }
+  }
+
+  const isAdminPath = pathname.startsWith("/admin");
+  if (isAdminPath && session.user.role !== "admin") {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
   if (pathname === "/") {
