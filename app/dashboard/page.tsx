@@ -1,3 +1,5 @@
+"use client";
+
 import { signIn, signOut } from "@/auth";
 import Image from "next/image";
 
@@ -60,14 +62,6 @@ export default function Home() {
             Documentation
           </a>
         </div>
-        <form
-          action={async () => {
-            "use server";
-            await signOut();
-          }}
-        >
-          <button type="submit">Sign out</button>
-        </form>
       </main>
     </div>
   );
