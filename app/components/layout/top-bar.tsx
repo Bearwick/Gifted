@@ -13,6 +13,11 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import React from "react";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 
 const pages = ["Sign out"];
 
@@ -82,17 +87,99 @@ const Profile = () => {
   );
 };
 
+const ThemeSwitch = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  const currentTheme = mounted ? (theme ?? "system") : "system";
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setTheme(event.target.value);
+  };
+
+  const getThemeIcon = (theme: string) => {
+    return theme === "system" ? (
+      <SettingsBrightnessIcon fontSize="small" />
+    ) : theme == "light" ? (
+      <LightModeIcon fontSize="small" />
+    ) : (
+      <DarkModeIcon fontSize="small" />
+    );
+  };
+
+  const renderThemeLabel = (theme: string) => {
+    return theme === "system" ? "System" : theme === "light" ? "Light" : "Dark";
+  };
+
+  return (
+    <Select
+      value={currentTheme}
+      onChange={handleChange}
+      size="small"
+      disabled={!mounted}
+      variant="outlined"
+      sx={{
+        "& .MuiOutlinedInput-notchedOutline": { border: 0 },
+        "&:hover .MuiOutlinedInput-notchedOutline": { border: 0 },
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: 0 },
+        "& .MuiSelect-icon": { color: "inherit" },
+        "& .MuiSelect-select": {
+          display: "flex",
+          alignItems: "center",
+          minHeight: "1.4375rem",
+        },
+      }}
+      renderValue={(value) => (
+        <Box
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 1,
+            lineHeight: 1,
+          }}
+        >
+          {getThemeIcon(value)}
+          {renderThemeLabel(value)}
+        </Box>
+      )}
+    >
+      <MenuItem value="system">
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          {getThemeIcon("system")}
+          System
+        </Box>
+      </MenuItem>
+      <MenuItem value="dark">
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          {getThemeIcon("dark")}
+          Dark
+        </Box>
+      </MenuItem>
+      <MenuItem value="light">
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          {getThemeIcon("light")}
+          Light
+        </Box>
+      </MenuItem>
+    </Select>
+  );
+};
+
 const AppBarContent = () => {
   const { data: session, status } = useSession();
   const role = session?.user?.role;
+
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      {role === "admin" ? (
+      {status === "authenticated" && role === "admin" ? (
         <Link href="/admin" className="text-sm text-red-400 hover:underline">
           Admin dashboard
         </Link>
       ) : null}
-
+      <ThemeSwitch />
       {status === "authenticated" ? <Profile /> : <Login />}
     </Box>
   );
@@ -104,11 +191,10 @@ export default function TopBar() {
       <AppBar>
         <Toolbar>
           <Box component="div" sx={{ flexGrow: 1 }}>
-            <Link href={"/"} className="text-2xl">
+            <Link href={"/"} className="text-2xl  dark:text-red-400">
               🎁 GIFTED
             </Link>
           </Box>
-
           <AppBarContent />
         </Toolbar>
       </AppBar>
