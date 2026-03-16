@@ -16,7 +16,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         .collection("users")
         .updateOne(
           { _id: new ObjectId(user.id) },
-          { $set: { status: "pending", role: "user" } },
+          {
+            $set: {
+              status: "pending",
+              role: "user",
+              friendIds: [],
+              giftsReceived: [],
+              giftsGivenAway: [],
+            },
+          },
         );
     },
   },
